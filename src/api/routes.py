@@ -67,10 +67,12 @@ async def query_chatbot(request: QueryRequest):
             detail=str(e)
         )
     except Exception as e:
+        import traceback
+        tb = traceback.format_exc()
         # Other errors
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error processing query: {str(e)}"
+            detail=f"Error processing query: {str(e)}\n\nTRACEBACK:\n{tb}"
         )
 
 

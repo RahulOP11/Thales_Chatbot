@@ -20,22 +20,6 @@ lib/
 lib64/
 parts/
 sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Data directories
-data/pdfs/
-data/processed/
-vectorstore/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
 *~
 
 # OS

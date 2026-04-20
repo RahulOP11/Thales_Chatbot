@@ -8,8 +8,12 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Pre-download the embedding model into the Docker image cache.
-# This strictly prevents Cloud Run from timing out or crashing by attempting to download massive files at startup.
+# Set explicit caching directories so the Cloud Run environment retains access to the models offline
+ENV HF_HOME=/app/.hf_cache
+ENV SENTENCE_TRANSFORMERS_HOME=/app/.hf_cache
+RUN mkdir -p /app/.hf_cache && chmod 777 /app/.hf_cache
+
+# Pre-download the embedding model strictly into the persistent explicit cache directory
 RUN python -c "from langchain_community.embeddings import HuggingFaceEmbeddings; HuggingFaceEmbeddings(model_name='intfloat/multilingual-e5-small', model_kwargs={'device': 'cpu'})"
 
 # Copy the rest of the application code

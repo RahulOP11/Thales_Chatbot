@@ -1,0 +1,25 @@
+# Byte-compiled / optimized
+*.pyc
+__pycache__/
+
+# Environments
+.env
+
+# Data
+data/
+
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Build artifacts
+*.egg-info/
+dist/
+build/
+
+# Logs
+*.log

@@ -59,7 +59,8 @@ if __name__ == "__main__":
     import uvicorn
     
     host = os.getenv("API_HOST", "0.0.0.0")
-    port = int(os.getenv("API_PORT", "8000"))
+    # Google Cloud Run injects the generic 'PORT' variable
+    port = int(os.getenv("PORT", os.getenv("API_PORT", "8080")))
     
     print(f"\n🚀 Starting Thales Chatbot API on {host}:{port}")
     print(f"📖 API Documentation: http://{host}:{port}/docs\n")

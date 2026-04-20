@@ -15,5 +15,5 @@ COPY . .
 ENV PORT=8000
 EXPOSE $PORT
 
-# Command to run the FastAPI application
-CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
+# Command to run the FastAPI application natively
+CMD ["python", "main.py"]

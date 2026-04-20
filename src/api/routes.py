@@ -41,12 +41,18 @@ async def query_chatbot(request: QueryRequest):
     try:
         bot = get_chatbot()
         
+        # Force strict defensive type-checking to protect Cloud Run libraries
+        safe_question = str(request.question)
+        safe_lang = str(request.language_preference) if request.language_preference else None
+        safe_grade = str(request.grade_filter) if request.grade_filter else None
+        safe_subj = str(request.subject_filter) if request.subject_filter else None
+        
         # Query the chatbot
         answer, citations_data, detected_lang, proc_time, ret_count = bot.query(
-            question=request.question,
-            language_preference=request.language_preference,
-            grade_filter=request.grade_filter,
-            subject_filter=request.subject_filter
+            question=safe_question,
+            language_preference=safe_lang,
+            grade_filter=safe_grade,
+            subject_filter=safe_subj
         )
         
         # Convert citations to Pydantic models

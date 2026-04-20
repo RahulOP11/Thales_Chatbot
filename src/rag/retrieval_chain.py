@@ -188,47 +188,51 @@ Answer (provide a comprehensive response based on the textbook content):"""
         # Build metadata filter
         filter_dict = self.build_filter(grade_filter, subject_filter, language_preference)
         
+        # Explicit defensive casting for ChromeDB search params
+        safe_k = int(self.top_k)
+        safe_q = str(question)
+        
         # For filtered retrieval, we need to use the vector store directly
         if filter_dict:
             # Custom retrieval with filters
             relevant_docs = self.vector_manager.search(
-                question,
-                k=self.top_k,
+                safe_q,
+                k=safe_k,
                 filter_dict=filter_dict
             )
             
             # Build context manually
-            context = "\n\n".join([doc.page_content for doc in relevant_docs])
+            context = "\n\n".join([str(doc.page_content) for doc in relevant_docs])
             
             # Create prompt manually
-            prompt = self.prompt_template.format(
+            prompt = str(self.prompt_template.format(
                 context=context,
-                question=question
-            )
+                question=safe_q
+            ))
             
             # Get answer from LLM
             response = self.llm.invoke(prompt)
-            answer = response.content if hasattr(response, 'content') else str(response)
+            answer = str(response.content) if hasattr(response, 'content') else str(response)
             source_documents = relevant_docs
         else:
             # Use standard retrieval without filters
             relevant_docs = self.vector_manager.search(
-                question,
-                k=self.top_k
+                safe_q,
+                k=safe_k
             )
             
             # Build context
-            context = "\n\n".join([doc.page_content for doc in relevant_docs])
+            context = "\n\n".join([str(doc.page_content) for doc in relevant_docs])
             
             # Create prompt
-            prompt = self.prompt_template.format(
+            prompt = str(self.prompt_template.format(
                 context=context,
-                question=question
-            )
+                question=safe_q
+            ))
             
             # Get answer from LLM
             answer_response = self.llm.invoke(prompt)
-            answer = answer_response.content if hasattr(answer_response, 'content') else str(answer_response)
+            answer = str(answer_response.content) if hasattr(answer_response, 'content') else str(answer_response)
             source_documents = relevant_docs
         
         # Extract citations

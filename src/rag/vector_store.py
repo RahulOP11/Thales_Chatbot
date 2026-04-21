@@ -61,10 +61,8 @@ class VectorStoreManager:
         print(f"   Total documents: {len(documents)}")
         print(f"   Batch size: {batch_size}")
         
-        # Create persist directory
         Path(self.persist_directory).mkdir(parents=True, exist_ok=True)
         
-        # Process in batches to manage memory
         print(f"\n🔄 Processing {len(documents)} documents in batches...")
         
         for i in range(0, len(documents), batch_size):
@@ -75,7 +73,6 @@ class VectorStoreManager:
             print(f"   Batch {batch_num}/{total_batches}: Processing {len(batch)} chunks...")
             
             if self.vectorstore is None:
-                # Create new vectorstore with first batch
                 self.vectorstore = Chroma.from_documents(
                     documents=batch,
                     embedding=self.embeddings,
@@ -83,7 +80,6 @@ class VectorStoreManager:
                     collection_name=self.collection_name
                 )
             else:
-                # Add to existing vectorstore
                 self.vectorstore.add_documents(batch)
         
         print(f"\n✅ Vector store created successfully!")
@@ -111,11 +107,8 @@ class VectorStoreManager:
             collection_name=self.collection_name
         )
         
-        # Get collection stats
-        collection = self.vectorstore._collection
-        count = collection.count()
-        
-        print(f"   ✓ Loaded {count} document chunks")
+        # ❌ Removed count() (causing crash)
+        print(f"   ✓ Vector store loaded successfully")
         
         return self.vectorstore
     
@@ -125,7 +118,6 @@ class VectorStoreManager:
         k: int = 5,
         score_threshold: Optional[float] = None
     ):
-        """Get retriever interface for the vector store"""
         if self.vectorstore is None:
             self.load_vectorstore()
         
@@ -146,7 +138,6 @@ class VectorStoreManager:
         k: int = 5,
         filter_dict: Optional[dict] = None
     ) -> List[Document]:
-        """Search vector store directly"""
         if self.vectorstore is None:
             self.load_vectorstore()
         
@@ -165,10 +156,9 @@ class VectorStoreManager:
         if self.vectorstore is None:
             self.load_vectorstore()
         
-        collection = self.vectorstore._collection
-        count = collection.count()
+        # ❌ Removed count() (causing crash)
+        count = "unknown"
         
-        # Get sample metadata to determine what's indexed
         sample_docs = self.vectorstore.similarity_search("test", k=100)
         
         books = set()
@@ -194,56 +184,3 @@ class VectorStoreManager:
             "subjects": sorted(list(subjects)),
             "languages": sorted(list(languages))
         }
-
-
-def main():
-    """Build vector store from processed documents"""
-    from src.rag.document_processor import TextbookProcessor
-    
-    print("\n" + "=" * 70)
-    print("  Building Vector Store for PUC Textbooks")
-    print("=" * 70)
-    
-    # Get directories
-    project_root = Path(__file__).parent.parent.parent
-    pdfs_dir = project_root / "data" / "pdfs"
-    
-    # Check if PDFs exist
-    pdf_files = list(pdfs_dir.glob("*.pdf"))
-    if not pdf_files:
-        print(f"\n⚠ No PDF files found in {pdfs_dir}")
-        print("   Please run: python src/utils/download_textbooks.py")
-        return
-    
-    print(f"\n📚 Found {len(pdf_files)} textbook PDFs")
-    
-    # Process documents
-    processor = TextbookProcessor()
-    documents = processor.process_all_textbooks(pdfs_dir)
-    
-    if not documents:
-        print("\n✗ No documents to process")
-        return
-    
-    # Create vector store
-    vector_manager = VectorStoreManager()
-    vector_manager.create_vectorstore(documents, batch_size=32)
-    
-    # Print stats
-    stats = vector_manager.get_stats()
-    print("\n📊 Vector Store Statistics:")
-    print(f"   Total chunks: {stats['total_chunks']}")
-    print(f"   Indexed books: {len(stats['indexed_books'])}")
-    for book in stats['indexed_books']:
-        print(f"     - {book}")
-    print(f"   Grades: {', '.join(stats['grades'])}")
-    print(f"   Subjects: {', '.join(stats['subjects'])}")
-    print(f"   Languages: {', '.join(stats['languages'])}")
-    
-    print("\n" + "=" * 70)
-    print("✅ Vector store build complete!")
-    print("=" * 70 + "\n")
-
-
-if __name__ == "__main__":
-    main()

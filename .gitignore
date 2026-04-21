@@ -28,6 +28,36 @@ Thumbs.db
 
 # Logs
 *.log
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
 
 # Testing
 .pytest_cache/
@@ -39,3 +69,7 @@ htmlcov/
 
 # Large files
 docs/
+
+# Data directories explicitly ignored to protect GitHub size constraints
+data/pdfs/
+data/processed/
